@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "weave/**/*.php": {
+      "runtime": "vercel-php@0.7.1"
+    }
+  },
+  "routes": [
+    { "src": "/", "dest": "weave/index.php" },
+    { "src": "/(.*)", "dest": "weave/$1" }
+  ]
+}
