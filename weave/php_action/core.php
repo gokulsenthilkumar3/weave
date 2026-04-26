@@ -1,15 +1,31 @@
-<?php 
+<?php
+/**
+ * core.php - Central authentication guard
+ * Improvements: Auth check un-commented, session started once,
+ * CSRF helper included, user info exposed to templates.
+ */
 
-session_start();
+// Start session only if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-require_once 'db_connect.php';
+require_once __DIR__ . '/db_connect.php';
 
-// echo "HI ". $_SESSION['userId'];
+// ---- Auth guard ----
+// Redirect unauthenticated users to login page
+if (!isset($_SESSION['userId'])) {
+    header('Location: ' . (str_contains($_SERVER['PHP_SELF'], 'php_action') ? '../index.php' : 'index.php'));
+    exit;
+}
 
-// if(!$_SESSION['userId']) {
-// 	header('location:index.php');	
-// } 
+// ---- CSRF helper ----
+// Ensure a CSRF token exists for all protected pages
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
-
-
+// ---- Convenience globals ----
+$currentUser = $_SESSION['username'] ?? 'User';
+$currentUserId = (int)($_SESSION['userId'] ?? 0);
 ?>
